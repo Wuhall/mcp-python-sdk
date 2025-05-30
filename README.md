@@ -61,13 +61,18 @@
 [discussions-url]: https://github.com/modelcontextprotocol/python-sdk/discussions
 
 ## Overview
-
 The Model Context Protocol allows applications to provide context for LLMs in a standardized way, separating the concerns of providing context from the actual LLM interaction. This Python SDK implements the full MCP specification, making it easy to:
 
-- Build MCP clients that can connect to any MCP server
-- Create MCP servers that expose resources, prompts and tools
-- Use standard transports like stdio, SSE, and Streamable HTTP
-- Handle all MCP protocol messages and lifecycle events
+模型上下文协议（Model Context Protocol, MCP）允许应用程序以标准化的方式为大语言模型（LLM）提供上下文，将上下文的提供与实际的LLM交互解耦。本 Python SDK 完整实现了 MCP 规范，便于您：
+
+- Build MCP clients that can connect to any MCP server  
+    构建可以连接到任意 MCP 服务器的客户端
+- Create MCP servers that expose resources, prompts and tools  
+    创建可暴露资源、提示和工具的 MCP 服务器
+- Use standard transports like stdio, SSE, and Streamable HTTP  
+    支持标准传输方式，如 stdio、SSE 和 Streamable HTTP
+- Handle all MCP protocol messages and lifecycle events  
+    处理所有 MCP 协议消息和生命周期事件
 
 ## Installation
 
@@ -137,18 +142,26 @@ Alternatively, you can test it with the MCP Inspector:
 mcp dev server.py
 ```
 
-## What is MCP?
+## What is MCP? / 什么是 MCP？
 
 The [Model Context Protocol (MCP)](https://modelcontextprotocol.io) lets you build servers that expose data and functionality to LLM applications in a secure, standardized way. Think of it like a web API, but specifically designed for LLM interactions. MCP servers can:
 
-- Expose data through **Resources** (think of these sort of like GET endpoints; they are used to load information into the LLM's context)
-- Provide functionality through **Tools** (sort of like POST endpoints; they are used to execute code or otherwise produce a side effect)
-- Define interaction patterns through **Prompts** (reusable templates for LLM interactions)
-- And more!
+[模型上下文协议（MCP）](https://modelcontextprotocol.io) 允许你构建服务器，以安全、标准化的方式向大语言模型（LLM）应用程序暴露数据和功能。你可以把它想象成专为 LLM 交互设计的 Web API。MCP 服务器可以：
+
+- Expose data through **Resources** (think of these sort of like GET endpoints; they are used to load information into the LLM's context)  
+    通过**资源（Resources）**暴露数据（类似于 GET 接口，用于将信息加载到 LLM 的上下文中）
+- Provide functionality through **Tools** (sort of like POST endpoints; they are used to execute code or otherwise produce a side effect)  
+    通过**工具（Tools）**提供功能（类似于 POST 接口，用于执行代码或产生副作用）
+- Define interaction patterns through **Prompts** (reusable templates for LLM interactions)  
+    通过**提示（Prompts）**定义交互模式（可复用的 LLM 交互模板）
+- And more!  
+    以及更多功能！
 
 ## Core Concepts
 
 ### Server
+
+FastMCP 服务器是您与 MCP 协议交互的核心接口。它负责连接管理、协议合规性以及消息路由：
 
 The FastMCP server is your core interface to the MCP protocol. It handles connection management, protocol compliance, and message routing:
 
@@ -200,8 +213,9 @@ def query_db() -> str:
 ```
 
 ### Resources
+Resources are how you expose data to LLMs. They're similar to GET endpoints in a REST API—they provide data but shouldn't perform significant computation or have side effects.
 
-Resources are how you expose data to LLMs. They're similar to GET endpoints in a REST API - they provide data but shouldn't perform significant computation or have side effects:
+资源（Resources）用于向大语言模型（LLM）暴露数据。它们类似于 REST API 中的 GET 接口——只提供数据，不应执行复杂计算或产生副作用。
 
 ```python
 from mcp.server.fastmcp import FastMCP
@@ -224,6 +238,8 @@ def get_user_profile(user_id: str) -> str:
 ### Tools
 
 Tools let LLMs take actions through your server. Unlike resources, tools are expected to perform computation and have side effects:
+
+工具允许大语言模型（LLM）通过您的服务器执行操作。与资源不同，工具通常会执行计算并产生副作用：
 
 ```python
 import httpx
@@ -250,6 +266,8 @@ async def fetch_weather(city: str) -> str:
 
 Prompts are reusable templates that help LLMs interact with your server effectively:
 
+提示（Prompts）是可复用的模板，帮助大语言模型（LLM）高效地与您的服务器进行交互：
+
 ```python
 from mcp.server.fastmcp import FastMCP
 from mcp.server.fastmcp.prompts import base
@@ -273,6 +291,8 @@ def debug_error(error: str) -> list[base.Message]:
 
 ### Images
 
+FastMCP 提供了一个自动处理图像数据的 `Image` 类：
+
 FastMCP provides an `Image` class that automatically handles image data:
 
 ```python
@@ -293,6 +313,9 @@ def create_thumbnail(image_path: str) -> Image:
 ### Context
 
 The Context object gives your tools and resources access to MCP capabilities:
+
+Context 对象为您的工具和资源提供对 MCP 能力的访问：
+
 
 ```python
 from mcp.server.fastmcp import FastMCP, Context
@@ -403,11 +426,13 @@ python server.py
 mcp run server.py
 ```
 
-Note that `mcp run` or `mcp dev` only supports server using FastMCP and not the low-level server variant.
+> **Note**: `mcp run` 或 `mcp dev` 仅支持基于 FastMCP 的服务器，不支持低级别 Server 变体。  
+> **Note**：`mcp run` or `mcp dev` only supports servers using FastMCP, not the low-level server variant.
 
 ### Streamable HTTP Transport
 
-> **Note**: Streamable HTTP transport is superseding SSE transport for production deployments.
+> **Note**: Streamable HTTP transport is superseding SSE transport for production deployments.  
+> **注意**：在生产环境中，Streamable HTTP 传输正在取代 SSE 传输。
 
 ```python
 from mcp.server.fastmcp import FastMCP
@@ -426,6 +451,7 @@ mcp.run(transport="streamable-http")
 ```
 
 You can mount multiple FastMCP servers in a FastAPI application:
+可以在一个 FastAPI 应用中挂在多个FastMCP servers
 
 ```python
 # echo.py
@@ -473,23 +499,36 @@ app.mount("/echo", echo.mcp.streamable_http_app())
 app.mount("/math", math.mcp.streamable_http_app())
 ```
 
-For low level server with Streamable HTTP implementations, see:
-- Stateful server: [`examples/servers/simple-streamablehttp/`](examples/servers/simple-streamablehttp/)
-- Stateless server: [`examples/servers/simple-streamablehttp-stateless/`](examples/servers/simple-streamablehttp-stateless/)
+For low-level server with Streamable HTTP implementations, see:  
+低级服务器的 Streamable HTTP 实现示例请参见：
 
-The streamable HTTP transport supports:
-- Stateful and stateless operation modes
-- Resumability with event stores
-- JSON or SSE response formats
-- Better scalability for multi-node deployments
+- Stateful server: [`examples/servers/simple-streamablehttp/`](examples/servers/simple-streamablehttp/)  
+    有状态服务器示例
+- Stateless server: [`examples/servers/simple-streamablehttp-stateless/`](examples/servers/simple-streamablehttp-stateless/)  
+    无状态服务器示例
+
+The streamable HTTP transport supports:  
+Streamable HTTP 传输支持：
+
+- Stateful and stateless operation modes  
+    有状态和无状态运行模式
+- Resumability with event stores  
+    通过事件存储实现可恢复性
+- JSON or SSE response formats  
+    支持 JSON 或 SSE 响应格式
+- Better scalability for multi-node deployments  
+    更适合多节点部署的可扩展性
 
 ### Mounting to an Existing ASGI Server
 
-> **Note**: SSE transport is being superseded by [Streamable HTTP transport](https://modelcontextprotocol.io/specification/2025-03-26/basic/transports#streamable-http).
+> **Note**: SSE transport is being superseded by [Streamable HTTP transport](https://modelcontextprotocol.io/specification/2025-03-26/basic/transports#streamable-http).  
+> **注意**：SSE 传输正在被 [Streamable HTTP 传输](https://modelcontextprotocol.io/specification/2025-03-26/basic/transports#streamable-http) 取代。
 
-By default, SSE servers are mounted at `/sse` and Streamable HTTP servers are mounted at `/mcp`. You can customize these paths using the methods described below.
+By default, SSE servers are mounted at `/sse` and Streamable HTTP servers are mounted at `/mcp`. You can customize these paths using the methods described below.  
+默认情况下，SSE 服务器挂载在 `/sse`，Streamable HTTP 服务器挂载在 `/mcp`。你可以使用下述方法自定义这些路径。
 
-You can mount the SSE server to an existing ASGI server using the `sse_app` method. This allows you to integrate the SSE server with other ASGI applications.
+You can mount the SSE server to an existing ASGI server using the `sse_app` method. This allows you to integrate the SSE server with other ASGI applications.  
+你可以通过 `sse_app` 方法将 SSE 服务器挂载到现有的 ASGI 服务器，实现与其他 ASGI 应用的集成。
 
 ```python
 from starlette.applications import Starlette
@@ -547,13 +586,17 @@ if __name__ == "__main__":
     search_mcp.run(transport="sse", mount_path="/search")
 ```
 
+有关在 Starlette 中挂载应用的更多信息，请参阅 [Starlette 文档](https://www.starlette.io/routing/#submounting-routes)。
+
 For more information on mounting applications in Starlette, see the [Starlette documentation](https://www.starlette.io/routing/#submounting-routes).
 
 ## Examples
 
 ### Echo Server
 
-A simple server demonstrating resources, tools, and prompts:
+A simple server demonstrating resources, tools, and prompts:  
+一个演示资源、工具和提示的简单服务器：
+
 
 ```python
 from mcp.server.fastmcp import FastMCP
@@ -613,8 +656,9 @@ def query_data(sql: str) -> str:
 ## Advanced Usage
 
 ### Low-Level Server
-
 For more control, you can use the low-level server implementation directly. This gives you full access to the protocol and allows you to customize every aspect of your server, including lifecycle management through the lifespan API:
+
+如需更高的灵活性，您可以直接使用低级别的服务器实现。这将为您提供对协议的完全控制，并允许您自定义服务器的各个方面，包括通过 lifespan API 管理生命周期：
 
 ```python
 from contextlib import asynccontextmanager
@@ -650,9 +694,12 @@ async def query_db(name: str, arguments: dict) -> list:
 ```
 
 The lifespan API provides:
-- A way to initialize resources when the server starts and clean them up when it stops
-- Access to initialized resources through the request context in handlers
-- Type-safe context passing between lifespan and request handlers
+- A way to initialize resources when the server starts and clean them up when it stops  
+    生命周期 API 提供了一种在服务器启动时初始化资源、停止时清理资源的方法
+- Access to initialized resources through the request context in handlers  
+    可以通过处理函数中的请求上下文访问已初始化的资源
+- Type-safe context passing between lifespan and request handlers  
+    支持在生命周期和请求处理函数之间进行类型安全的上下文传递
 
 ```python
 import mcp.server.stdio
@@ -724,6 +771,8 @@ Caution: The `mcp run` and `mcp dev` tool doesn't support low-level server.
 ### Writing MCP Clients
 
 The SDK provides a high-level client interface for connecting to MCP servers using various [transports](https://modelcontextprotocol.io/specification/2025-03-26/basic/transports):
+
+该 SDK 提供了高级客户端接口，可通过多种[传输方式](https://modelcontextprotocol.io/specification/2025-03-26/basic/transports)连接到 MCP 服务器：
 
 ```python
 from mcp import ClientSession, StdioServerParameters, types
