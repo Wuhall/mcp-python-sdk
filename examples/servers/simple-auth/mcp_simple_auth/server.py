@@ -256,6 +256,7 @@ class SimpleGitHubOAuthProvider(OAuthAuthorizationServerProvider):
 
 
 def create_simple_mcp_server(settings: ServerSettings) -> FastMCP:
+    print("======> Starting Simple MCP Server with GitHub OAuth <======")
     """Create a simple FastMCP server with GitHub OAuth."""
     oauth_provider = SimpleGitHubOAuthProvider(settings)
 
