@@ -778,6 +778,7 @@ The SDK provides a high-level client interface for connecting to MCP servers usi
 from mcp import ClientSession, StdioServerParameters, types
 from mcp.client.stdio import stdio_client
 
+# 使用命令行的方式连接server，前提：client、server在同一个地方
 # Create server parameters for stdio connection
 server_params = StdioServerParameters(
     command="python",  # Executable
